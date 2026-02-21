@@ -28,6 +28,7 @@ struct MogetApp: App {
                         .transition(.opacity)
                 } else if showHome {
                     HomeView()
+                        .ignoresSafeArea(.all)
                         .transition(.opacity)
                 } else {
                     BirthdayView(onNext: { showHome = true })

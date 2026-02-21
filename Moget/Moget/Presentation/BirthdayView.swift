@@ -3,7 +3,38 @@ import SwiftUI
 struct BirthdayView: View {
     var onNext: () -> Void = {}
     @State private var birthdayText = ""
+    @State private var isLoading = false
+    @State private var showError = false
     @FocusState private var isFocused: Bool
+
+    private var formattedBirthday: String {
+        let y = birthdayText.prefix(4)
+        let m = birthdayText.dropFirst(4).prefix(2)
+        let d = birthdayText.dropFirst(6).prefix(2)
+        return "\(y)-\(m)-\(d)"
+    }
+
+    private func registerBirthday() {
+        guard let url = URL(string: "https://mainly-massive-cricket.ngrok-free.app/birthday") else { return }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("true", forHTTPHeaderField: "ngrok-skip-browser-warning")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: ["birthday": formattedBirthday])
+
+        isLoading = true
+        URLSession.shared.dataTask(with: request) { _, response, _ in
+            DispatchQueue.main.async {
+                isLoading = false
+                if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201 {
+                    onNext()
+                } else {
+                    showError = true
+                }
+            }
+        }.resume()
+    }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -49,16 +80,26 @@ struct BirthdayView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onTapGesture { isFocused = false }
         .safeAreaInset(edge: .bottom) {
-            Button(action: { onNext() }) {
-                Text("다음")
-                    .font(.custom("Pretendard-SemiBold", size: 16))
-                    .foregroundColor(birthdayText.count >= 8 ? .white : Color.DS.Gray.g400)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 48)
-                    .background(birthdayText.count >= 8 ? Color.DS.Purple.normal : Color.DS.Gray.g100)
-                    .cornerRadius(12)
+            Button(action: { registerBirthday() }) {
+                Group {
+                    if isLoading {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text("다음")
+                            .font(.custom("Pretendard-SemiBold", size: 16))
+                            .foregroundColor(birthdayText.count >= 8 ? .white : Color.DS.Gray.g400)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(birthdayText.count >= 8 ? Color.DS.Purple.normal : Color.DS.Gray.g100)
+                .cornerRadius(12)
             }
-            .disabled(birthdayText.count < 8)
+            .disabled(birthdayText.count < 8 || isLoading)
+            .alert("날짜 형식을 확인해주세요", isPresented: $showError) {
+                Button("확인", role: .cancel) {}
+            }
             .padding(.horizontal, 24)
             .padding(.bottom, 16)
         }
