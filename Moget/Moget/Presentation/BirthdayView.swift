@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BirthdayView: View {
     @State private var birthdayText = ""
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -26,6 +27,11 @@ struct BirthdayView: View {
                     TextField("", text: $birthdayText)
                         .font(.custom("Pretendard-Medium", size: 15))
                         .foregroundColor(Color.DS.Gray.g700)
+                        .focused($isFocused)
+                        .keyboardType(.numberPad)
+                        .onChange(of: birthdayText) { _, newValue in
+                            birthdayText = newValue.filter { $0.isNumber }
+                        }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 14)
                 }
@@ -40,17 +46,18 @@ struct BirthdayView: View {
             .padding(.leading, 28)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .onTapGesture { isFocused = false }
         .safeAreaInset(edge: .bottom) {
             Button(action: {}) {
                 Text("다음")
-                    .font(.custom("Pretendard-SemiBold", size: birthdayText.isEmpty ? 16 : 16))
-                    .foregroundColor(birthdayText.isEmpty ? Color.DS.Gray.g400 : .white)
+                    .font(.custom("Pretendard-SemiBold", size: 16))
+                    .foregroundColor(birthdayText.count >= 8 ? .white : Color.DS.Gray.g400)
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
-                    .background(birthdayText.isEmpty ? Color.DS.Gray.g100 : Color.DS.Purple.normal)
+                    .background(birthdayText.count >= 8 ? Color.DS.Purple.normal : Color.DS.Gray.g100)
                     .cornerRadius(12)
             }
-            .disabled(birthdayText.isEmpty)
+            .disabled(birthdayText.count < 8)
             .padding(.horizontal, 24)
             .padding(.bottom, 16)
         }
