@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(git rm:*)",
+      "Bash(grep fullname\\\\|postscript\\\\|family:*)"
     ]
   }
 }
