@@ -85,6 +85,57 @@ struct WebView: UIViewRepresentable {
     }
 }
 
+struct VideoPlayerView: View {
+    let player: AVPlayer
+    var onDismiss: () -> Void
+
+    @State private var countdown = 5
+    @State private var timer: Timer? = nil
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            VideoPlayer(player: player)
+                .ignoresSafeArea()
+
+            Button {
+                timer?.invalidate()
+                onDismiss()
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.black.opacity(0.5))
+                        .frame(width: 40, height: 40)
+                    if countdown > 0 {
+                        Text("\(countdown)")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                    } else {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .disabled(countdown > 0)
+            .padding(20)
+        }
+        .onAppear {
+            player.play()
+            timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { t in
+                if countdown > 0 {
+                    countdown -= 1
+                } else {
+                    t.invalidate()
+                }
+            }
+        }
+        .onDisappear {
+            timer?.invalidate()
+            player.pause()
+        }
+    }
+}
+
 struct HomeView: View {
     @State private var showVideo = false
 
@@ -94,18 +145,7 @@ struct HomeView: View {
             .ignoresSafeArea(.all)
             .fullScreenCover(isPresented: $showVideo) {
                 if let url = Bundle.main.url(forResource: "0222", withExtension: "mov") {
-                    VideoPlayer(player: AVPlayer(url: url))
-                        .ignoresSafeArea()
-                        .overlay(alignment: .topTrailing) {
-                            Button {
-                                showVideo = false
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 30))
-                                    .foregroundColor(.white)
-                                    .padding(20)
-                            }
-                        }
+                    VideoPlayerView(player: AVPlayer(url: url), onDismiss: { showVideo = false })
                 }
             }
     }
