@@ -40,6 +40,20 @@ struct BirthdayView: View {
             .padding(.leading, 28)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .safeAreaInset(edge: .bottom) {
+            Button(action: {}) {
+                Text("다음")
+                    .font(.custom("Pretendard-SemiBold", size: birthdayText.isEmpty ? 16 : 16))
+                    .foregroundColor(birthdayText.isEmpty ? Color.DS.Gray.g400 : .white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .background(birthdayText.isEmpty ? Color.DS.Gray.g100 : Color.DS.Purple.normal)
+                    .cornerRadius(12)
+            }
+            .disabled(birthdayText.isEmpty)
+            .padding(.horizontal, 24)
+            .padding(.bottom, 16)
+        }
     }
 }
 
