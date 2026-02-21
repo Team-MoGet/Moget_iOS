@@ -2,22 +2,25 @@ import SwiftUI
 import WebKit
 import KakaoSDKShare
 import KakaoSDKTemplate
+import AVKit
 
 struct WebView: UIViewRepresentable {
     let url: URL
+    var onShowVideo: () -> Void = {}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator()
+        Coordinator(onShowVideo: onShowVideo)
     }
 
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         config.userContentController.add(context.coordinator, name: "kakaoShare")
+        config.userContentController.add(context.coordinator, name: "showVideo")
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.scrollView.contentInsetAdjustmentBehavior = .never
         webView.navigationDelegate = context.coordinator
-        print("[WebView] kakaoShare 핸들러 등록 완료")
+        print("[WebView] 핸들러 등록 완료 (kakaoShare, showVideo)")
         return webView
     }
 
@@ -26,6 +29,11 @@ struct WebView: UIViewRepresentable {
     }
 
     class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
+        var onShowVideo: () -> Void
+
+        init(onShowVideo: @escaping () -> Void) {
+            self.onShowVideo = onShowVideo
+        }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             let js = "typeof window.webkit !== 'undefined' && typeof window.webkit.messageHandlers !== 'undefined' && typeof window.webkit.messageHandlers.kakaoShare !== 'undefined'"
@@ -33,11 +41,19 @@ struct WebView: UIViewRepresentable {
                 print("[WebView] JS에서 kakaoShare 핸들러 접근 가능: \(result ?? "nil")")
             }
         }
+
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             print("[WebView] 메시지 수신: \(message.name)")
-            guard message.name == "kakaoShare" else { return }
-            print("[WebView] kakaoShare 메시지 확인 → 공유 실행")
-            shareToKakao()
+            switch message.name {
+            case "kakaoShare":
+                print("[WebView] kakaoShare 메시지 확인 → 공유 실행")
+                shareToKakao()
+            case "showVideo":
+                print("[WebView] showVideo 메시지 확인 → 영상 재생")
+                DispatchQueue.main.async { self.onShowVideo() }
+            default:
+                break
+            }
         }
 
         private func shareToKakao() {
@@ -70,10 +86,28 @@ struct WebView: UIViewRepresentable {
 }
 
 struct HomeView: View {
+    @State private var showVideo = false
+
     var body: some View {
-        WebView(url: URL(string: "https://moget-fe.vercel.app/gacha")!)
+        WebView(url: URL(string: "https://moget-fe.vercel.app/gacha")!, onShowVideo: { showVideo = true })
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .ignoresSafeArea(.all)
+            .fullScreenCover(isPresented: $showVideo) {
+                if let url = Bundle.main.url(forResource: "0222", withExtension: "mov") {
+                    VideoPlayer(player: AVPlayer(url: url))
+                        .ignoresSafeArea()
+                        .overlay(alignment: .topTrailing) {
+                            Button {
+                                showVideo = false
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 30))
+                                    .foregroundColor(.white)
+                                    .padding(20)
+                            }
+                        }
+                }
+            }
     }
 }
 
