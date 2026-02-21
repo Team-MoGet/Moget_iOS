@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreText
+import KakaoSDKCommon
 
 @main
 struct MogetApp: App {
@@ -16,6 +17,7 @@ struct MogetApp: App {
             guard let url = Bundle.main.url(forResource: name, withExtension: "otf") else { continue }
             CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
         }
+        KakaoSDK.initSDK(appKey: "565903385303eb5946fac8a52ba34778")
     }
 
     var body: some Scene {
@@ -40,6 +42,7 @@ struct MogetApp: App {
                 }
             }
             .preferredColorScheme(.light)
+
         }
     }
 }
