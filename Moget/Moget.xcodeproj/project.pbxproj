@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6FC762722F4A2EAF005BAF29 /* KakaoSDKShare in Frameworks */ = {isa = PBXBuildFile; productRef = 6FC762712F4A2EAF005BAF29 /* KakaoSDKShare */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		6FC7622A2F49C1A7005BAF29 /* Moget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moget.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FC762722F4A2EAF005BAF29 /* KakaoSDKShare in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = Moget;
 			packageProductDependencies = (
+				6FC762712F4A2EAF005BAF29 /* KakaoSDKShare */,
 			);
 			productName = Moget;
 			productReference = 6FC7622A2F49C1A7005BAF29 /* Moget.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 6FC762212F49C1A7005BAF29;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6FC762702F4A2EAF005BAF29 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6FC7622B2F49C1A7005BAF29 /* Products */;
 			projectDirPath = "";
@@ -334,6 +343,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6FC762702F4A2EAF005BAF29 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.27.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6FC762712F4A2EAF005BAF29 /* KakaoSDKShare */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6FC762702F4A2EAF005BAF29 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */;
+			productName = KakaoSDKShare;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6FC762222F49C1A7005BAF29 /* Project object */;
 }

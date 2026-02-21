@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct BirthdayView: View {
+    var onNext: () -> Void = {}
     @State private var birthdayText = ""
     @FocusState private var isFocused: Bool
 
@@ -48,7 +49,7 @@ struct BirthdayView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onTapGesture { isFocused = false }
         .safeAreaInset(edge: .bottom) {
-            Button(action: {}) {
+            Button(action: { onNext() }) {
                 Text("다음")
                     .font(.custom("Pretendard-SemiBold", size: 16))
                     .foregroundColor(birthdayText.count >= 8 ? .white : Color.DS.Gray.g400)

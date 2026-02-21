@@ -4,6 +4,7 @@ import CoreText
 @main
 struct MogetApp: App {
     @State private var showSplash = true
+    @State private var showHome = false
 
     init() {
         let fontNames = [
@@ -23,12 +24,16 @@ struct MogetApp: App {
                 if showSplash {
                     SplashView()
                         .transition(.opacity)
+                } else if showHome {
+                    HomeView()
+                        .transition(.opacity)
                 } else {
-                    BirthdayView()
+                    BirthdayView(onNext: { showHome = true })
                         .transition(.opacity)
                 }
             }
             .animation(.easeInOut(duration: 0.4), value: showSplash)
+            .animation(.easeInOut(duration: 0.4), value: showHome)
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     showSplash = false
