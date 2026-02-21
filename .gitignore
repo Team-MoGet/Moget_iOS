@@ -55,3 +55,6 @@ fastlane/test_output
 
 # Code Injection
 iOSInjectionProject/
+
+# oh-my-claudecode
+.omc/
